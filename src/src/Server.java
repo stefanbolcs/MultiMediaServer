@@ -20,7 +20,8 @@ public class Server {
     public double g = 9.8;    
     double v0, startAngle;    
     public int howMany = 7;   
-    public double tobesent[][] = new double[howMany][2];   
+    public double tobesent[][] = null;
+    public boolean wasToBeSentset = false;
     
     public Server() throws IOException {
 
@@ -73,6 +74,11 @@ public class Server {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 
                 howMany = Integer.valueOf(in.readLine());
+                
+               
+                
+                tobesent = new double[howMany][2];   
+                
                                 
                  v0 = Double.valueOf(in.readLine());
                  startAngle = Double.valueOf(in.readLine());
