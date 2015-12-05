@@ -19,17 +19,14 @@ public class Server {
     
     public double g = 9.8;    
     double v0, startAngle;    
-    
-    public int howMany = 6;   
-    public double tobesent[][] = new double[howMany][2];
+    public int howMany = 7;   
+    public double tobesent[][] = new double[howMany][2];   
     
     public Server() throws IOException {
 
         server = new ServerSocket(port);
     }
 
-
-    
     
     public void calculate(){
     
@@ -39,8 +36,10 @@ public class Server {
         double tRISE = vy0/g;
         
         double allTime = tRISE*2;
-        //System.out.println("Alltime is" +allTime);        
-        double timeIncrementer = (allTime/(howMany-1));        
+        //System.out.println("Alltime is" +allTime);
+        
+        double timeIncrementer = (allTime/(howMany-1));
+        
         double t=0;
         
         for(int j= 0; j<howMany; j++){
@@ -48,13 +47,11 @@ public class Server {
             double theCOS = Math.cos(convertDegreeToRadians(startAngle));
             double theSIN = Math.sin(convertDegreeToRadians(startAngle));
 
-
             x = v0*t*theCOS;
+            double vyONE = v0*t*theSIN;       
+            double vyTWO = -(0.5*9.8*Math.pow(t, 2));
 
-            double vyFirst = v0*t*theSIN;
-            double vySecond = -(0.5*9.8*Math.pow(t, 2));
-
-            y = vyFirst+vySecond;
+            y = vyONE + vyTWO;
 
             tobesent[j][0] = x;
             tobesent[j][1] = y;
@@ -62,8 +59,9 @@ public class Server {
             //System.out.println("t: "+t+"  x = "+x+" , y = "+y);
 
             t += timeIncrementer;
-
+    
         }
+    
     }
 
     public void execute() {
@@ -73,16 +71,19 @@ public class Server {
                 client = server.accept();
                 
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                String ss = in.readLine(); 
-                 v0 = Double.valueOf(in.readLine());
-                startAngle = Double.valueOf(in.readLine());
-                //System.out.println("INCOMING:  angle = " + startAngle);
-                // System.out.println("INCOMING: v0 = "+v0);
                 
-                calculate();
+                howMany = Integer.valueOf(in.readLine());
+                                
+                 v0 = Double.valueOf(in.readLine());
+                 startAngle = Double.valueOf(in.readLine());
+                
+                //System.out.println("INCOMING: v0 = "+v0);
+                //System.out.println("INCOMING:  angle = " + startAngle);
+                
+                 calculate();
                 
                 output = new PrintWriter(client.getOutputStream(), true);
-               
+              
                 for(int i =0; i<howMany ;i++){
                     
                     try {
@@ -93,12 +94,15 @@ public class Server {
                             output.flush();
 
                         } catch (InterruptedException e) {
-                            e.printStackTrace();                            
+                            e.printStackTrace();
+                            
                         }
-                }             
+                }
+         
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
 
     }
@@ -114,9 +118,8 @@ public class Server {
         }
     }
     
+     public double convertDegreeToRadians(double deg){
     
-    
-      public double convertDegreeToRadians(double deg){   
     
     return deg*(Math.PI/180);
     
